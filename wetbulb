@@ -1,0 +1,38 @@
+#!/usr/bin/env python3
+# encoding=UTF-8
+
+# Copyright © 2022 Jakub Wilk <jwilk@jwilk.net>
+# SPDX-License-Identifier: MIT
+
+'''
+compute wet-bulb temperature from air temperature and relative humidity
+'''
+
+import argparse
+import math
+
+0_0  # Python >= 3.6 is required
+
+def wbt(t, h):
+    # Stull, R. (2011). "Wet-Bulb Temperature from Relative Humidity and Air Temperature",
+    # Journal of Applied Meteorology and Climatology, 50(11), 2267-2269.
+    # https://journals.ametsoc.org/view/journals/apme/50/11/jamc-d-11-0143.1.xml
+    a = math.atan
+    return (
+        t * a(0.151977 * (h + 8.313659) ** 0.5)
+        + a(t + h)
+        - a(h - 1.676331)
+        + 0.00391838 * h ** 1.5 * a(0.023101 * h)
+        - 4.686035
+    )
+
+def main():
+    ap = argparse.ArgumentParser()
+    ap.add_argument('t', metavar='TEMP-C', type=float)
+    ap.add_argument('h', metavar='RH%', type=float)
+    opts = ap.parse_args()
+    t = wbt(opts.t, opts.h)
+    print(f'{t:.1f}')
+
+if __name__ == '__main__':
+    main()
